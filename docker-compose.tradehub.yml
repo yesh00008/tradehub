@@ -1,0 +1,254 @@
+version: '3.8'
+
+services:
+  # Service 1: API Gateway (8200)
+  tradehub-api-gateway:
+    build:
+      context: ./tradehub/services/api-gateway
+      dockerfile: Dockerfile
+    container_name: tradehub-api-gateway
+    ports:
+      - "8200:8200"
+    environment:
+      - PORT=8200
+      - DATABASE_URL=postgres://fintech:fintech123@payflow-postgres:5432/tradehub?sslmode=disable
+      - REDIS_URL=payflow-redis:6379
+      - TRADER_SERVICE_URL=http://tradehub-trader-service:8201
+      - TRADING_ACCOUNT_SERVICE_URL=http://tradehub-trading-account:8202
+      - ORDER_MANAGEMENT_URL=http://tradehub-order-management:8203
+      - EXECUTION_ENGINE_URL=http://tradehub-execution-engine:8204
+      - CLEARING_SERVICE_URL=http://tradehub-clearing-service:8205
+      - PORTFOLIO_SERVICE_URL=http://tradehub-portfolio-service:8206
+      - MARKET_DATA_SERVICE_URL=http://tradehub-market-data:8207
+      - NOTIFICATION_SERVICE_URL=http://tradehub-notification:8208
+    depends_on:
+      - tradehub-trader-service
+      - tradehub-trading-account
+      - tradehub-order-management
+    networks:
+      - payflow-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8200/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Service 2: Trader Service (8201)
+  tradehub-trader-service:
+    build:
+      context: ./tradehub/services/trader-service
+      dockerfile: Dockerfile
+    container_name: tradehub-trader-service
+    ports:
+      - "8201:8201"
+    environment:
+      - PORT=8201
+      - DATABASE_URL=postgres://fintech:fintech123@payflow-postgres:5432/tradehub?sslmode=disable
+      - REDIS_URL=payflow-redis:6379
+      - RABBITMQ_URL=amqp://fintech:rabbit123@payflow-rabbitmq:5672/
+    networks:
+      - payflow-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8201/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Service 3: Trading Account Service (8202)
+  tradehub-trading-account:
+    build:
+      context: ./tradehub/services/trading-account-service
+      dockerfile: Dockerfile
+    container_name: tradehub-trading-account
+    ports:
+      - "8202:8202"
+    environment:
+      - PORT=8202
+      - DATABASE_URL=postgres://fintech:fintech123@payflow-postgres:5432/tradehub?sslmode=disable
+      - REDIS_URL=payflow-redis:6379
+    networks:
+      - payflow-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8202/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Service 4: Order Management Service (8203)
+  tradehub-order-management:
+    build:
+      context: ./tradehub/services/order-management-service
+      dockerfile: Dockerfile
+    container_name: tradehub-order-management
+    ports:
+      - "8203:8203"
+    environment:
+      - PORT=8203
+      - DATABASE_URL=postgres://fintech:fintech123@payflow-postgres:5432/tradehub?sslmode=disable
+      - REDIS_URL=payflow-redis:6379
+      - RABBITMQ_URL=amqp://fintech:rabbit123@payflow-rabbitmq:5672/
+      - EXECUTION_ENGINE_URL=http://tradehub-execution-engine:8204
+    networks:
+      - payflow-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8203/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Service 5: Execution Engine (8204)
+  tradehub-execution-engine:
+    build:
+      context: ./tradehub/services/execution-engine
+      dockerfile: Dockerfile
+    container_name: tradehub-execution-engine
+    ports:
+      - "8204:8204"
+    environment:
+      - PORT=8204
+      - DATABASE_URL=postgres://fintech:fintech123@payflow-postgres:5432/tradehub?sslmode=disable
+      - REDIS_URL=payflow-redis:6379
+      - RABBITMQ_URL=amqp://fintech:rabbit123@payflow-rabbitmq:5672/
+      - CLEARING_SERVICE_URL=http://tradehub-clearing-service:8205
+      - PORTFOLIO_SERVICE_URL=http://tradehub-portfolio-service:8206
+    networks:
+      - payflow-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8204/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Service 6: Clearing Service (8205)
+  tradehub-clearing-service:
+    build:
+      context: ./tradehub/services/clearing-service
+      dockerfile: Dockerfile
+    container_name: tradehub-clearing-service
+    ports:
+      - "8205:8205"
+    environment:
+      - PORT=8205
+      - DATABASE_URL=postgres://fintech:fintech123@payflow-postgres:5432/tradehub?sslmode=disable
+      - REDIS_URL=payflow-redis:6379
+      - RABBITMQ_URL=amqp://fintech:rabbit123@payflow-rabbitmq:5672/
+    networks:
+      - payflow-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8205/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Service 7: Portfolio Service (8206)
+  tradehub-portfolio-service:
+    build:
+      context: ./tradehub/services/portfolio-service
+      dockerfile: Dockerfile
+    container_name: tradehub-portfolio-service
+    ports:
+      - "8206:8206"
+    environment:
+      - PORT=8206
+      - DATABASE_URL=postgres://fintech:fintech123@payflow-postgres:5432/tradehub?sslmode=disable
+      - REDIS_URL=payflow-redis:6379
+    networks:
+      - payflow-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8206/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Service 8: Market Data Service (8207)
+  tradehub-market-data:
+    build:
+      context: ./tradehub/services/market-data-service
+      dockerfile: Dockerfile
+    container_name: tradehub-market-data
+    ports:
+      - "8207:8207"
+    environment:
+      - PORT=8207
+      - DATABASE_URL=postgres://fintech:fintech123@payflow-postgres:5432/tradehub?sslmode=disable
+      - REDIS_URL=payflow-redis:6379
+    networks:
+      - payflow-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8207/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Service 9: Notification Service (8208)
+  tradehub-notification:
+    build:
+      context: ./tradehub/services/notification-service
+      dockerfile: Dockerfile
+    container_name: tradehub-notification
+    ports:
+      - "8208:8208"
+    environment:
+      - PORT=8208
+      - DATABASE_URL=postgres://fintech:fintech123@payflow-postgres:5432/tradehub?sslmode=disable
+      - REDIS_URL=payflow-redis:6379
+      - RABBITMQ_URL=amqp://fintech:rabbit123@payflow-rabbitmq:5672/
+    networks:
+      - payflow-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8208/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Backend API (BFF) - Node.js (5000)
+  tradehub-backend-api:
+    build:
+      context: ./backend-api
+      dockerfile: Dockerfile
+    container_name: tradehub-backend-api
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - API_GATEWAY_URL=http://tradehub-api-gateway:8200
+      - TRADER_SERVICE_URL=http://tradehub-trader-service:8201
+      - TRADING_ACCOUNT_URL=http://tradehub-trading-account:8202
+      - ORDER_MANAGEMENT_URL=http://tradehub-order-management:8203
+      - EXECUTION_ENGINE_URL=http://tradehub-execution-engine:8204
+      - CLEARING_SERVICE_URL=http://tradehub-clearing-service:8205
+      - PORTFOLIO_SERVICE_URL=http://tradehub-portfolio-service:8206
+      - MARKET_DATA_URL=http://tradehub-market-data:8207
+      - NOTIFICATION_URL=http://tradehub-notification:8208
+    depends_on:
+      - tradehub-api-gateway
+    networks:
+      - payflow-network
+    restart: unless-stopped
+
+  # Frontend - React (3003)
+  tradehub-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: tradehub-frontend
+    ports:
+      - "3003:3003"
+    depends_on:
+      - tradehub-backend-api
+    networks:
+      - payflow-network
+    restart: unless-stopped
+
+networks:
+  payflow-network:
+    external: true

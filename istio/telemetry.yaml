@@ -1,0 +1,25 @@
+---
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: tradehub-access-logs
+  namespace: tradehub
+spec:
+  accessLogging:
+  - providers:
+    - name: envoy
+    disabled: false
+---
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: tradehub-metrics
+  namespace: tradehub
+spec:
+  metrics:
+  - providers:
+    - name: prometheus
+    overrides:
+    - match:
+        mode: CLIENT_AND_SERVER
+      disabled: false

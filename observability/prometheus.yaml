@@ -1,0 +1,54 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tradehub-prometheus-config
+  namespace: tradehub
+data:
+  tradehub-scrape.yaml: |
+    scrape_configs:
+      - job_name: 'tradehub-api-gateway'
+        static_configs:
+          - targets: ['tradehub-api-gateway.tradehub.svc.cluster.local:8200']
+        metrics_path: /metrics
+      - job_name: 'tradehub-trader-service'
+        static_configs:
+          - targets: ['tradehub-trader-service.tradehub.svc.cluster.local:8201']
+        metrics_path: /metrics
+      - job_name: 'tradehub-trading-account'
+        static_configs:
+          - targets: ['tradehub-trading-account.tradehub.svc.cluster.local:8202']
+        metrics_path: /metrics
+      - job_name: 'tradehub-order-management'
+        static_configs:
+          - targets: ['tradehub-order-management.tradehub.svc.cluster.local:8203']
+        metrics_path: /metrics
+      - job_name: 'tradehub-execution-engine'
+        static_configs:
+          - targets: ['tradehub-execution-engine.tradehub.svc.cluster.local:8204']
+        metrics_path: /metrics
+      - job_name: 'tradehub-clearing-service'
+        static_configs:
+          - targets: ['tradehub-clearing-service.tradehub.svc.cluster.local:8205']
+        metrics_path: /metrics
+      - job_name: 'tradehub-portfolio-service'
+        static_configs:
+          - targets: ['tradehub-portfolio-service.tradehub.svc.cluster.local:8206']
+        metrics_path: /metrics
+      - job_name: 'tradehub-market-data'
+        static_configs:
+          - targets: ['tradehub-market-data.tradehub.svc.cluster.local:8207']
+        metrics_path: /metrics
+      - job_name: 'tradehub-notification'
+        static_configs:
+          - targets: ['tradehub-notification.tradehub.svc.cluster.local:8208']
+        metrics_path: /metrics
+      - job_name: 'istio-mesh-tradehub'
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names: [tradehub]
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_container_name]
+            action: keep
+            regex: istio-proxy

@@ -1,0 +1,30 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: tradehub-vs
+  namespace: tradehub
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - tradehub-gateway
+  http:
+  - match:
+    - uri: { prefix: /health }
+    route:
+    - destination:
+        host: tradehub-api-gateway
+        port: { number: 8200 }
+  - match:
+    - uri: { prefix: /api }
+    route:
+    - destination:
+        host: tradehub-api-gateway
+        port: { number: 8200 }
+      timeout: 30s
+  - match:
+    - uri: { prefix: /metrics }
+    route:
+    - destination:
+        host: tradehub-api-gateway
+        port: { number: 8200 }

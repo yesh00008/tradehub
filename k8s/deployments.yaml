@@ -1,0 +1,479 @@
+---
+# ─── API Gateway (8200) ───────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tradehub-api-gateway
+  namespace: tradehub
+  labels:
+    app: tradehub-api-gateway
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tradehub-api-gateway
+  template:
+    metadata:
+      labels:
+        app: tradehub-api-gateway
+        version: v1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8200"
+    spec:
+      containers:
+      - name: api-gateway
+        image: tradehub/api-gateway:latest
+        imagePullPolicy: Never
+        ports:
+        - { containerPort: 8200, name: http }
+        envFrom:
+        - configMapRef: { name: tradehub-config }
+        - secretRef:    { name: tradehub-secrets }
+        resources:
+          requests: { memory: "128Mi", cpu: "100m" }
+          limits:   { memory: "256Mi", cpu: "500m" }
+        livenessProbe:
+          httpGet: { path: /health, port: 8200 }
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet: { path: /health, port: 8200 }
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tradehub-api-gateway
+  namespace: tradehub
+spec:
+  selector:
+    app: tradehub-api-gateway
+  ports:
+  - { port: 8200, targetPort: 8200, name: http }
+
+---
+# ─── Trader Service (8201) ────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tradehub-trader-service
+  namespace: tradehub
+  labels:
+    app: tradehub-trader-service
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tradehub-trader-service
+  template:
+    metadata:
+      labels:
+        app: tradehub-trader-service
+        version: v1
+    spec:
+      containers:
+      - name: trader-service
+        image: tradehub/trader-service:latest
+        imagePullPolicy: Never
+        ports:
+        - { containerPort: 8201, name: http }
+        envFrom:
+        - configMapRef: { name: tradehub-config }
+        - secretRef:    { name: tradehub-secrets }
+        resources:
+          requests: { memory: "64Mi", cpu: "50m" }
+          limits:   { memory: "128Mi", cpu: "250m" }
+        livenessProbe:
+          httpGet: { path: /health, port: 8201 }
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet: { path: /health, port: 8201 }
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tradehub-trader-service
+  namespace: tradehub
+spec:
+  selector:
+    app: tradehub-trader-service
+  ports:
+  - { port: 8201, targetPort: 8201, name: http }
+
+---
+# ─── Trading Account Service (8202) ──────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tradehub-trading-account
+  namespace: tradehub
+  labels:
+    app: tradehub-trading-account
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tradehub-trading-account
+  template:
+    metadata:
+      labels:
+        app: tradehub-trading-account
+        version: v1
+    spec:
+      containers:
+      - name: trading-account
+        image: tradehub/trading-account-service:latest
+        imagePullPolicy: Never
+        ports:
+        - { containerPort: 8202, name: http }
+        envFrom:
+        - configMapRef: { name: tradehub-config }
+        - secretRef:    { name: tradehub-secrets }
+        resources:
+          requests: { memory: "64Mi", cpu: "50m" }
+          limits:   { memory: "128Mi", cpu: "250m" }
+        livenessProbe:
+          httpGet: { path: /health, port: 8202 }
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet: { path: /health, port: 8202 }
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tradehub-trading-account
+  namespace: tradehub
+spec:
+  selector:
+    app: tradehub-trading-account
+  ports:
+  - { port: 8202, targetPort: 8202, name: http }
+
+---
+# ─── Order Management (8203) ─────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tradehub-order-management
+  namespace: tradehub
+  labels:
+    app: tradehub-order-management
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tradehub-order-management
+  template:
+    metadata:
+      labels:
+        app: tradehub-order-management
+        version: v1
+    spec:
+      containers:
+      - name: order-management
+        image: tradehub/order-management-service:latest
+        imagePullPolicy: Never
+        ports:
+        - { containerPort: 8203, name: http }
+        envFrom:
+        - configMapRef: { name: tradehub-config }
+        - secretRef:    { name: tradehub-secrets }
+        resources:
+          requests: { memory: "64Mi", cpu: "50m" }
+          limits:   { memory: "128Mi", cpu: "250m" }
+        livenessProbe:
+          httpGet: { path: /health, port: 8203 }
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet: { path: /health, port: 8203 }
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tradehub-order-management
+  namespace: tradehub
+spec:
+  selector:
+    app: tradehub-order-management
+  ports:
+  - { port: 8203, targetPort: 8203, name: http }
+
+---
+# ─── Execution Engine (8204) ──────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tradehub-execution-engine
+  namespace: tradehub
+  labels:
+    app: tradehub-execution-engine
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tradehub-execution-engine
+  template:
+    metadata:
+      labels:
+        app: tradehub-execution-engine
+        version: v1
+    spec:
+      containers:
+      - name: execution-engine
+        image: tradehub/execution-engine:latest
+        imagePullPolicy: Never
+        ports:
+        - { containerPort: 8204, name: http }
+        envFrom:
+        - configMapRef: { name: tradehub-config }
+        - secretRef:    { name: tradehub-secrets }
+        resources:
+          requests: { memory: "64Mi", cpu: "50m" }
+          limits:   { memory: "128Mi", cpu: "250m" }
+        livenessProbe:
+          httpGet: { path: /health, port: 8204 }
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet: { path: /health, port: 8204 }
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tradehub-execution-engine
+  namespace: tradehub
+spec:
+  selector:
+    app: tradehub-execution-engine
+  ports:
+  - { port: 8204, targetPort: 8204, name: http }
+
+---
+# ─── Clearing Service (8205) ──────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tradehub-clearing-service
+  namespace: tradehub
+  labels:
+    app: tradehub-clearing-service
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tradehub-clearing-service
+  template:
+    metadata:
+      labels:
+        app: tradehub-clearing-service
+        version: v1
+    spec:
+      containers:
+      - name: clearing-service
+        image: tradehub/clearing-service:latest
+        imagePullPolicy: Never
+        ports:
+        - { containerPort: 8205, name: http }
+        envFrom:
+        - configMapRef: { name: tradehub-config }
+        - secretRef:    { name: tradehub-secrets }
+        resources:
+          requests: { memory: "64Mi", cpu: "50m" }
+          limits:   { memory: "128Mi", cpu: "250m" }
+        livenessProbe:
+          httpGet: { path: /health, port: 8205 }
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet: { path: /health, port: 8205 }
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tradehub-clearing-service
+  namespace: tradehub
+spec:
+  selector:
+    app: tradehub-clearing-service
+  ports:
+  - { port: 8205, targetPort: 8205, name: http }
+
+---
+# ─── Portfolio Service (8206) ─────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tradehub-portfolio-service
+  namespace: tradehub
+  labels:
+    app: tradehub-portfolio-service
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tradehub-portfolio-service
+  template:
+    metadata:
+      labels:
+        app: tradehub-portfolio-service
+        version: v1
+    spec:
+      containers:
+      - name: portfolio-service
+        image: tradehub/portfolio-service:latest
+        imagePullPolicy: Never
+        ports:
+        - { containerPort: 8206, name: http }
+        envFrom:
+        - configMapRef: { name: tradehub-config }
+        - secretRef:    { name: tradehub-secrets }
+        resources:
+          requests: { memory: "64Mi", cpu: "50m" }
+          limits:   { memory: "128Mi", cpu: "250m" }
+        livenessProbe:
+          httpGet: { path: /health, port: 8206 }
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet: { path: /health, port: 8206 }
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tradehub-portfolio-service
+  namespace: tradehub
+spec:
+  selector:
+    app: tradehub-portfolio-service
+  ports:
+  - { port: 8206, targetPort: 8206, name: http }
+
+---
+# ─── Market Data Service (8207) ───────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tradehub-market-data
+  namespace: tradehub
+  labels:
+    app: tradehub-market-data
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tradehub-market-data
+  template:
+    metadata:
+      labels:
+        app: tradehub-market-data
+        version: v1
+    spec:
+      containers:
+      - name: market-data
+        image: tradehub/market-data-service:latest
+        imagePullPolicy: Never
+        ports:
+        - { containerPort: 8207, name: http }
+        envFrom:
+        - configMapRef: { name: tradehub-config }
+        - secretRef:    { name: tradehub-secrets }
+        resources:
+          requests: { memory: "64Mi", cpu: "50m" }
+          limits:   { memory: "128Mi", cpu: "250m" }
+        livenessProbe:
+          httpGet: { path: /health, port: 8207 }
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet: { path: /health, port: 8207 }
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tradehub-market-data
+  namespace: tradehub
+spec:
+  selector:
+    app: tradehub-market-data
+  ports:
+  - { port: 8207, targetPort: 8207, name: http }
+
+---
+# ─── Notification Service (8208) ──────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tradehub-notification
+  namespace: tradehub
+  labels:
+    app: tradehub-notification
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tradehub-notification
+  template:
+    metadata:
+      labels:
+        app: tradehub-notification
+        version: v1
+    spec:
+      containers:
+      - name: notification
+        image: tradehub/notification-service:latest
+        imagePullPolicy: Never
+        ports:
+        - { containerPort: 8208, name: http }
+        envFrom:
+        - configMapRef: { name: tradehub-config }
+        - secretRef:    { name: tradehub-secrets }
+        resources:
+          requests: { memory: "64Mi", cpu: "50m" }
+          limits:   { memory: "128Mi", cpu: "250m" }
+        livenessProbe:
+          httpGet: { path: /health, port: 8208 }
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet: { path: /health, port: 8208 }
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tradehub-notification
+  namespace: tradehub
+spec:
+  selector:
+    app: tradehub-notification
+  ports:
+  - { port: 8208, targetPort: 8208, name: http }

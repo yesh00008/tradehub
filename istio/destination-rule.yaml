@@ -1,0 +1,72 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: tradehub-api-gateway-dr
+  namespace: tradehub
+spec:
+  host: tradehub-api-gateway
+  trafficPolicy:
+    loadBalancer: { simple: ROUND_ROBIN }
+    connectionPool:
+      http: { http1MaxPendingRequests: 100, http2MaxRequests: 500 }
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 10s
+      baseEjectionTime: 30s
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: tradehub-trader-service-dr
+  namespace: tradehub
+spec:
+  host: tradehub-trader-service
+  trafficPolicy:
+    loadBalancer: { simple: ROUND_ROBIN }
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 10s
+      baseEjectionTime: 30s
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: tradehub-order-management-dr
+  namespace: tradehub
+spec:
+  host: tradehub-order-management
+  trafficPolicy:
+    loadBalancer: { simple: ROUND_ROBIN }
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 10s
+      baseEjectionTime: 30s
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: tradehub-execution-engine-dr
+  namespace: tradehub
+spec:
+  host: tradehub-execution-engine
+  trafficPolicy:
+    loadBalancer: { simple: ROUND_ROBIN }
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 10s
+      baseEjectionTime: 30s
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: tradehub-market-data-dr
+  namespace: tradehub
+spec:
+  host: tradehub-market-data
+  trafficPolicy:
+    loadBalancer: { simple: ROUND_ROBIN }
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 10s
+      baseEjectionTime: 30s

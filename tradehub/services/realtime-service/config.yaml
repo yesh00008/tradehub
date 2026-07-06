@@ -1,0 +1,22 @@
+service:
+  name: realtime-service
+  port: 8084
+
+database:
+  url: ${DB_URL}
+
+redis:
+  url: ${REDIS_URL}
+
+rabbitmq:
+  url: ${RABBITMQ_URL}
+
+security:
+  jwt_secret: ${JWT_SECRET}
+
+observability:
+  metrics_path: /metrics
+  health_path: /health
+
+
+

@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tradehub-config
+  namespace: tradehub
+data:
+  DATABASE_URL: "postgres://fintech:fintech123@postgres.payflow:5432/tradehub?sslmode=disable"
+  REDIS_URL: "redis.payflow:6379"
+  RABBITMQ_URL: "amqp://fintech:rabbit123@rabbitmq.payflow:5672/"
+  API_GATEWAY_URL: "http://tradehub-api-gateway.tradehub.svc.cluster.local:8200"
+  TRADER_SERVICE_URL: "http://tradehub-trader-service.tradehub.svc.cluster.local:8201"
+  TRADING_ACCOUNT_URL: "http://tradehub-trading-account.tradehub.svc.cluster.local:8202"
+  ORDER_MANAGEMENT_URL: "http://tradehub-order-management.tradehub.svc.cluster.local:8203"
+  EXECUTION_ENGINE_URL: "http://tradehub-execution-engine.tradehub.svc.cluster.local:8204"
+  CLEARING_SERVICE_URL: "http://tradehub-clearing-service.tradehub.svc.cluster.local:8205"
+  PORTFOLIO_SERVICE_URL: "http://tradehub-portfolio-service.tradehub.svc.cluster.local:8206"
+  MARKET_DATA_URL: "http://tradehub-market-data.tradehub.svc.cluster.local:8207"
+  NOTIFICATION_SERVICE_URL: "http://tradehub-notification.tradehub.svc.cluster.local:8208"
+  OTEL_SERVICE_NAMESPACE: "tradehub"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tradehub-secrets
+  namespace: tradehub
+type: Opaque
+stringData:
+  JWT_SECRET: tradehub-jwt-secret-key-2024
+  DB_PASSWORD: tradehub_pass
+  REDIS_PASSWORD: tradehub_redis_pass

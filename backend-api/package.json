@@ -1,0 +1,36 @@
+{
+  "name": "tradehub-backend-api",
+  "version": "1.0.0",
+  "description": "TradeHub Backend API Gateway - BFF for Trading Frontend",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "tradehub",
+    "trading",
+    "api",
+    "gateway",
+    "bff"
+  ],
+  "author": "TradeHub Team",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.5.1",
+    "express-ws": "^5.0.2",
+    "helmet": "^7.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "uuid": "^9.0.1",
+    "ws": "^8.16.0",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

@@ -1,0 +1,20 @@
+service:
+  name: execution-engine
+  port: 8204
+
+database:
+  url: ${DB_URL}
+
+redis:
+  url: ${REDIS_URL}
+
+rabbitmq:
+  url: ${RABBITMQ_URL}
+
+security:
+  jwt_secret: ${JWT_SECRET}
+
+observability:
+  metrics_path: /metrics
+  health_path: /health
+

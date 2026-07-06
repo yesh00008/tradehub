@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+*.o
+*.a
+*.so
+*.exe
+
+# Go
+*.test
+*.out
+coverage.txt
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Docker
+.docker/
+
+# Kubernetes secrets
+*-secret.yaml
